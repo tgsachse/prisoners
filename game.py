@@ -7,13 +7,18 @@ from constants import COOPERATE, DEFECT, POINTS
 
 class Simulation:
     """"""
-    def __init__(self, player_count, generation_count, population_shift=5):
+    def __init__(self,
+                 player_count,
+                 generation_count,
+                 interaction_count,
+                 population_shift):
         """Initialize the simulation by creating all the players."""
         self.next_player_id = 0
         self.strategy_frequencies = self.__init_strategy_frequencies()
         self.players = self.__create_players(player_count)
         self.generation_count = generation_count
         self.population_shift = population_shift
+        self.interaction_count = interaction_count
 
 
     def __init_strategy_frequencies(self):
@@ -95,19 +100,22 @@ class Simulation:
                                                        Strategy())
             self.next_player_id += 1
 
-    def __reset_player_points(self):
-        """Reset the points for each player."""
+
+    def __reset_players(self):
+        """Reset each player for the next generation."""
         for player in self.players.values():
-            player.reset_points()
+            player.reset()
 
 
     def single_generation(self):
         for player_id, player in self.players.items():
-            other = random.choice(list(self.players.values()))
-            while other == player:
+
+            for interaction in range(self.interaction_count):
                 other = random.choice(list(self.players.values()))
-            
-            self.__play_game(player, other)
+                while other == player:
+                    other = random.choice(list(self.players.values()))
+                
+                self.__play_game(player, other)
 
         self.__remove_weak_players()
         self.__replicate_strong_players()
@@ -118,7 +126,7 @@ class Simulation:
         for player in self.players.values():
             self.strategy_frequencies[player.strategy.NAME][-1] += 1
 
-        self.__reset_player_points()
+        self.__reset_players()
 
     def run(self):
         """Run the simulation."""
@@ -170,10 +178,20 @@ class Player:
         self.strategy.reflect(opponent, opponent_action)
 
 
-    def reset_points(self):
-        """Reset this player's points.'"""
+    def reset(self):
+        """Reset this player.'"""
         self.points = 0
+        self.strategy.reset()
 
 
-simulation = Simulation(50, 100)
-simulation.run()
+if __name__ == "__main__":
+    PLAYERS = 50
+    GENERATIONS = 30
+    INTERACTION_MULTIPLIER = 100
+    TURNOVER_MULTIPLIER = 10
+
+    simulation = Simulation(PLAYERS,
+                            GENERATIONS,
+                            PLAYERS * INTERACTION_MULTIPLIER,
+                            PLAYERS // TURNOVER_MULTIPLIER)
+    simulation.run()

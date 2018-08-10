@@ -16,6 +16,10 @@ class RandomStrategy:
         """Don't reflect or remember any information.'"""
         pass
 
+    
+    def reset(self):
+        """Nothing to reset."""
+        pass
 
 class AlwaysDefectStrategy:
     """Always defect, every game."""
@@ -31,6 +35,11 @@ class AlwaysDefectStrategy:
         pass
 
 
+    def reset(self):
+        """Nothing to reset."""
+        pass
+
+
 class AlwaysCooperateStrategy:
     """Always cooperate like a total sucker."""
     NAME = "ALWAYS_COOPERATE"
@@ -42,6 +51,11 @@ class AlwaysCooperateStrategy:
 
     def reflect(self, opponent, opponent_action):
         """Don't reflect or remember anything.'"""
+        pass
+
+
+    def reset(self):
+        """Nothing to reset."""
         pass
 
 
@@ -63,6 +77,11 @@ class GrudgerStrategy:
         """If the opponent defected, remember it."""
         if opponent_action == DEFECT:
             self.cheaters.add(opponent)
+
+
+    def reset(self):
+        """Forget the cheaters for the next generation."""
+        self.cheaters = set()
 
 
 class TitForTatStrategy:
@@ -90,9 +109,14 @@ class TitForTatStrategy:
             self.cheaters.add(opponent)
 
 
+    def reset(self):
+        """Forget the cheaters for the next generation."""
+        self.cheaters = set()
+
+
 STRATEGIES = {
     "RANDOM" : RandomStrategy,
-    #"ALWAYS_DEFECT" : AlwaysDefectStrategy,
+    "ALWAYS_DEFECT" : AlwaysDefectStrategy,
     "ALWAYS_COOPERATE" : AlwaysCooperateStrategy,
     "GRUDGER" : GrudgerStrategy,
     "TIT_FOR_TAT" : TitForTatStrategy,
