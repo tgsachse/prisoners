@@ -3,6 +3,10 @@ from constants import COOPERATE, DEFECT, POINTS
 
 class RandomStrategy:
 
+    def __init__(self):
+        self.name = "RANDOM"
+
+
     def execute(self):
         return random.choice((COOPERATE, DEFECT))
 
@@ -12,9 +16,13 @@ class RandomStrategy:
 
    ### 
     def __str__(self):
-        return "random"
+        return self.name
 
 class AlwaysDefectStrategy:
+
+    def __init__(self):
+        self.name = "ALWAYS_DEFECT"
+    
 
     def execute(self):
         return DEFECT
@@ -25,10 +33,14 @@ class AlwaysDefectStrategy:
 
 ###
     def __str__(self):
-        return "defect"
+        return self.name
 
 
 class AlwaysCooperateStrategy:
+    
+    def __init__(self):
+        self.name = "ALWAYS_COOPERATE"
+    
     
     def execute(self):
         return COOPERATE
@@ -37,9 +49,12 @@ class AlwaysCooperateStrategy:
     def reflect(self, opponent):
         pass
 
-###
     def __str__(self):
-        return "coop"
+        return self.name
 
 
-strategy_list = [RandomStrategy, AlwaysDefectStrategy, AlwaysCooperateStrategy]
+strategy_dict = {
+    "RANDOM" : RandomStrategy,
+    "ALWAYS_DEFECT" : AlwaysDefectStrategy,
+    "ALWAYS_COOPERATE" : AlwaysCooperateStrategy
+}
