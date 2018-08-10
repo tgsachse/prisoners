@@ -10,7 +10,7 @@ class RandomStrategy:
     def reflect(self, opponent):
         pass
 
-    
+   ### 
     def __str__(self):
         return "random"
 
@@ -23,7 +23,7 @@ class AlwaysDefectStrategy:
     def reflect(self, opponent):
         pass
 
-
+###
     def __str__(self):
         return "defect"
 
@@ -37,7 +37,7 @@ class AlwaysCooperateStrategy:
     def reflect(self, opponent):
         pass
 
-
+###
     def __str__(self):
         return "coop"
 
