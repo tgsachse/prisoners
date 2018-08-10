@@ -1,60 +1,67 @@
+""""""
+
 import random
 from constants import COOPERATE, DEFECT, POINTS
 
 class RandomStrategy:
-
-    def __init__(self):
-        self.name = "RANDOM"
-
+    """Randomly choose whether to coorperate or defect each game."""
+    name = "RANDOM"
 
     def execute(self):
+        """Randomly choose to cooperate or defect."""
         return random.choice((COOPERATE, DEFECT))
 
 
     def reflect(self, opponent):
+        """Don't reflect or remember any information.'"""
         pass
 
-   ### 
-    def __str__(self):
-        return self.name
 
 class AlwaysDefectStrategy:
-
-    def __init__(self):
-        self.name = "ALWAYS_DEFECT"
-    
+    """Always defect, every game."""
+    name = "ALWAYS_DEFECT"
 
     def execute(self):
+        """Always defect."""
         return DEFECT
 
 
     def reflect(self, opponent):
+        """Don't reflect or remember anything.'"""
         pass
-
-###
-    def __str__(self):
-        return self.name
 
 
 class AlwaysCooperateStrategy:
-    
-    def __init__(self):
-        self.name = "ALWAYS_COOPERATE"
-    
-    
+    """Always cooperate like a total sucker."""
+    name = "ALWAYS_COOPERATE"
+   
     def execute(self):
+        """Always cooperate."""
         return COOPERATE
 
 
     def reflect(self, opponent):
+        """Don't reflect or remember anything.'"""
         pass
 
-    def __str__(self):
-        return self.name
+
+class GrudgerStrategy:
+    """Always cooperate with those who have not wronged you."""
+    name = "GRUDGER"
+
+    def execute(self):
+        """Cooperate with those who haven't wronged you."""
+        return COOPERATE
+
+    
+    def reflect(self, opponent):
+        """If the opponent defected, remember it."""
+        pass
 
 
-strategy_dict = {
+STRATEGIES = {
     "RANDOM" : RandomStrategy,
     "ALWAYS_DEFECT" : AlwaysDefectStrategy,
-    "ALWAYS_COOPERATE" : AlwaysCooperateStrategy
+    "ALWAYS_COOPERATE" : AlwaysCooperateStrategy,
+    "GRUDGER" : GrudgerStrategy,
 }
