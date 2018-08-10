@@ -12,9 +12,19 @@ class Simulation:
         """Initialize the simulation by creating all the players."""
         
         self.next_player_id = 0
+        self.strategy_frequencies = self.__init_strategy_frequencies()
         self.players = self.__create_players(player_count)
         self.generation_count = generation_count
         self.population_shift = population_shift
+
+
+    def __init_strategy_frequencies(self):
+        frequencies = {}
+
+        for strategy in strategy_dict.keys():
+            frequencies[strategy] = []
+
+        return frequencies
 
 
     def __create_players(self, player_count):
@@ -97,9 +107,8 @@ class Simulation:
         for player in self.players.values():
             player.reset_points()
 
-    def run(self):
-        """Run the simulation."""
 
+    def single_generation(self):
         for player_id, player in self.players.items():
             other = random.choice(list(self.players.values()))
             while other == player:
@@ -109,9 +118,24 @@ class Simulation:
 
         self.__remove_weak_players()
         self.__replicate_strong_players()
+
+        for category in self.strategy_frequencies.keys():
+            self.strategy_frequencies[category].append(0)
+
+        for player in self.players.values():
+            self.strategy_frequencies[player.strategy.name][-1] += 1
+
         self.__reset_player_points()
 
-        print(self.players)
+    def run(self):
+        """Run the simulation."""
+    
+        for generation in range(self.generation_count):
+            self.single_generation()
+        
+        for category in self.strategy_frequencies.keys():
+            print(category + ": ", end="")
+            print(self.strategy_frequencies[category])
 
 class Player:
     """"""
@@ -162,6 +186,8 @@ class Player:
 
 
     def reset_points(self):
+        """Reset this player's points.'"""
+
         self.points = 0
 
 
@@ -170,8 +196,5 @@ class Player:
         return str(self.points) + " " + self.strategy.__str__()
 
 
-simulation = Simulation(10, 100)
-simulation.run()
-simulation.run()
-simulation.run()
+simulation = Simulation(50, 100)
 simulation.run()
