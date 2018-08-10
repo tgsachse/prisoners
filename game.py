@@ -1,28 +1,35 @@
 import strategies
-import random
-
-COOPERATE = True
-DEFECT = False
+from constants import COOPERATE, DEFECT, POINTS
 
 class Simulation:
     
-    def __init__(self):
-        self.players = {
-            1 : Player(1, RandomStrategy()),
-            2 : Player(2, RandomStrategy())
-        }
+    def __init__(self, player_count, generation_count):
+        self.players = self.__create_players(player_count)
+        print(len(self.players))
+        print(self.players)
 
-        self.point_values = {
-                "reward" : 3,
-                "temptation" : 5,
-                "sucker" : 0,
-                "punishment" : 1,
-                }
-        
+    def __create_players(self, player_count):
+        strategy_count = len(strategies.strategy_list)
+        players = {}
+
+        if strategy_count > player_count:
+            pass
+
+        player_id = 0
+        for Strategy in strategies.strategy_list:
+            for player in range(int(player_count / strategy_count)):
+                players[player_id] = Player(player_id, Strategy())
+                player_id += 1
+
+        return players
+
+
     def run(self):
-        p1p = self.players[1].play()
-        p2p = self.players[2].play()
+        pass
+        #p1p = self.players[1].play()
+        #p2p = self.players[2].play()
 
+        """
         if p1p == COOPERATE:
             if p2p == COOPERATE:
                 self.players[1].update_points(self.point_values["reward"], self.players[2])
@@ -40,13 +47,13 @@ class Simulation:
 
         print("player 1 points: {}".format(self.players[1].points))
         print("player 2 points: {}".format(self.players[2].points))
+        """
 
 class Player:
     
     def __init__(self, identifier, strategy):
         self.identifier = identifier
         self.strategy = strategy
-        self.memory = {}
         self.points = 0
 
 
@@ -59,21 +66,11 @@ class Player:
         self.strategy.reflect(opponent)
 
 
-class RandomStrategy:
-
-    def __init__(self):
-        self.memory = {}
+    def __repr__(self):
+        return self.strategy.__str__()
 
 
-    def execute(self):
-        return random.choice((COOPERATE, DEFECT))
-
-
-    def reflect(self, opponent):
-        pass
-
-
-simulation = Simulation()
+simulation = Simulation(10, 100)
 simulation.run()
 simulation.run()
 simulation.run()
