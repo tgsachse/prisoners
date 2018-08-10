@@ -58,23 +58,23 @@ class Simulation:
     
     def __play_game(self, player1, player2):
         """Play the game between two players."""
-        player1_result = player1.play()
-        player2_result = player2.play()
+        player1_result = player1.play(player2)
+        player2_result = player2.play(player1)
         
         if player1_result == COOPERATE:
             if player2_result == COOPERATE:
-                player1.update_points(POINTS["REWARD"], player2)
-                player2.update_points(POINTS["REWARD"], player1)
+                player1.update_points(POINTS["REWARD"], player2, COOPERATE)
+                player2.update_points(POINTS["REWARD"], player1, COOPERATE)
             elif player2_result == DEFECT:
-                player1.update_points(POINTS["SUCKER"], player2)
-                player2.update_points(POINTS["TEMPTATION"], player1)
+                player1.update_points(POINTS["SUCKER"], player2, DEFECT)
+                player2.update_points(POINTS["TEMPTATION"], player1, COOPERATE)
         elif player1_result == DEFECT:
             if player2_result == COOPERATE:
-                player1.update_points(POINTS["TEMPTATION"], player2)
-                player2.update_points(POINTS["SUCKER"], player1)
+                player1.update_points(POINTS["TEMPTATION"], player2, COOPERATE)
+                player2.update_points(POINTS["SUCKER"], player1, DEFECT)
             elif player2_result == DEFECT:
-                player1.update_points(POINTS["PUNISHMENT"], player2)
-                player2.update_points(POINTS["PUNISHMENT"], player1)
+                player1.update_points(POINTS["PUNISHMENT"], player2, DEFECT)
+                player2.update_points(POINTS["PUNISHMENT"], player1, DEFECT)
 
 
     def __remove_weak_players(self):
@@ -90,7 +90,7 @@ class Simulation:
         strongest_players = heapq.nlargest(self.population_shift, self.players.values())
 
         for player in strongest_players:
-            Strategy = STRATEGIES[player.strategy.name]
+            Strategy = STRATEGIES[player.strategy.NAME]
             self.players[self.next_player_id] = Player(self.next_player_id,
                                                        Strategy())
             self.next_player_id += 1
@@ -116,7 +116,7 @@ class Simulation:
             self.strategy_frequencies[category].append(0)
 
         for player in self.players.values():
-            self.strategy_frequencies[player.strategy.name][-1] += 1
+            self.strategy_frequencies[player.strategy.NAME][-1] += 1
 
         self.__reset_player_points()
 
@@ -159,15 +159,15 @@ class Player:
         return self.points <= other.points
 
 
-    def play(self):
+    def play(self, opponent):
         """Return the result of the player's strategy, when executed.'"""
-        return self.strategy.execute()
+        return self.strategy.execute(opponent)
 
 
-    def update_points(self, points, opponent):
+    def update_points(self, points, opponent, opponent_action):
         """Update the player's points and reflect on the results.'"""
         self.points += points
-        self.strategy.reflect(opponent)
+        self.strategy.reflect(opponent, opponent_action)
 
 
     def reset_points(self):

@@ -5,63 +5,95 @@ from constants import COOPERATE, DEFECT, POINTS
 
 class RandomStrategy:
     """Randomly choose whether to coorperate or defect each game."""
-    name = "RANDOM"
+    NAME = "RANDOM"
 
-    def execute(self):
+    def execute(self, opponent):
         """Randomly choose to cooperate or defect."""
         return random.choice((COOPERATE, DEFECT))
 
 
-    def reflect(self, opponent):
+    def reflect(self, opponent, opponent_action):
         """Don't reflect or remember any information.'"""
         pass
 
 
 class AlwaysDefectStrategy:
     """Always defect, every game."""
-    name = "ALWAYS_DEFECT"
+    NAME = "ALWAYS_DEFECT"
 
-    def execute(self):
+    def execute(self, opponent):
         """Always defect."""
         return DEFECT
 
 
-    def reflect(self, opponent):
+    def reflect(self, opponent, opponent_action):
         """Don't reflect or remember anything.'"""
         pass
 
 
 class AlwaysCooperateStrategy:
     """Always cooperate like a total sucker."""
-    name = "ALWAYS_COOPERATE"
+    NAME = "ALWAYS_COOPERATE"
    
-    def execute(self):
+    def execute(self, opponent):
         """Always cooperate."""
         return COOPERATE
 
 
-    def reflect(self, opponent):
+    def reflect(self, opponent, opponent_action):
         """Don't reflect or remember anything.'"""
         pass
 
 
 class GrudgerStrategy:
     """Always cooperate with those who have not wronged you."""
-    name = "GRUDGER"
+    NAME = "GRUDGER"
 
-    def execute(self):
+    def __init__(self):
+        """Create a set to remember cheaters."""
+        self.cheaters = set()
+
+
+    def execute(self, opponent):
         """Cooperate with those who haven't wronged you."""
-        return COOPERATE
+        return DEFECT if opponent in self.cheaters else COOPERATE
 
     
-    def reflect(self, opponent):
+    def reflect(self, opponent, opponent_action):
         """If the opponent defected, remember it."""
-        pass
+        if opponent_action == DEFECT:
+            self.cheaters.add(opponent)
+
+
+class TitForTatStrategy:
+    """If your opponent did you wrong, hit them back."""
+    NAME = "TIT_FOR_TAT"
+
+    def __init__(self):
+        """Create a set to remember those who did you wrong."""
+        self.cheaters = set()
+
+
+    def execute(self, opponent):
+        """Strike back against those who do you wrong."""
+        if opponent in self.cheaters:
+            self.cheaters.remove(opponent)
+
+            return DEFECT
+        else:
+            return COOPERATE
+
+
+    def reflect(self, opponent, opponent_action):
+        """If the opponent defected, they did you wrong and must be punished."""
+        if opponent_action == DEFECT:
+            self.cheaters.add(opponent)
 
 
 STRATEGIES = {
     "RANDOM" : RandomStrategy,
-    "ALWAYS_DEFECT" : AlwaysDefectStrategy,
+    #"ALWAYS_DEFECT" : AlwaysDefectStrategy,
     "ALWAYS_COOPERATE" : AlwaysCooperateStrategy,
     "GRUDGER" : GrudgerStrategy,
+    "TIT_FOR_TAT" : TitForTatStrategy,
 }
