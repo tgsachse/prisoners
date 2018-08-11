@@ -1,3 +1,8 @@
+"""Global constants for the Iterated Prisoner's Dilemma.
+
+By Tiger Sachse.
+"""
+
 COOPERATE = True
 DEFECT = False
 POINTS = {

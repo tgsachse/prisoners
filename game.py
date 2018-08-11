@@ -1,4 +1,10 @@
-""""""
+"""A simulator for the Iterated Prisoner's Dilemma.
+
+This was inspired by Richard Dawkins's discussion of the nature
+game in his book, The Selfish Gene.
+
+By Tiger Sachse.
+"""
 
 import heapq
 import random
@@ -6,7 +12,7 @@ from strategies import STRATEGIES
 from constants import COOPERATE, DEFECT, POINTS
 
 class Simulation:
-    """"""
+    """The simulator containing all necessary functions."""
     def __init__(self,
                  player_count,
                  generation_count,
@@ -22,6 +28,7 @@ class Simulation:
 
 
     def __init_strategy_frequencies(self):
+        """Create a dictionary to track the frequencies of strategies."""
         frequencies = {}
 
         for strategy in STRATEGIES.keys():
@@ -68,18 +75,18 @@ class Simulation:
         
         if player1_result == COOPERATE:
             if player2_result == COOPERATE:
-                player1.update_points(POINTS["REWARD"], player2, COOPERATE)
-                player2.update_points(POINTS["REWARD"], player1, COOPERATE)
+                player1.update(POINTS["REWARD"], player2, COOPERATE)
+                player2.update(POINTS["REWARD"], player1, COOPERATE)
             elif player2_result == DEFECT:
-                player1.update_points(POINTS["SUCKER"], player2, DEFECT)
-                player2.update_points(POINTS["TEMPTATION"], player1, COOPERATE)
+                player1.update(POINTS["SUCKER"], player2, DEFECT)
+                player2.update(POINTS["TEMPTATION"], player1, COOPERATE)
         elif player1_result == DEFECT:
             if player2_result == COOPERATE:
-                player1.update_points(POINTS["TEMPTATION"], player2, COOPERATE)
-                player2.update_points(POINTS["SUCKER"], player1, DEFECT)
+                player1.update(POINTS["TEMPTATION"], player2, COOPERATE)
+                player2.update(POINTS["SUCKER"], player1, DEFECT)
             elif player2_result == DEFECT:
-                player1.update_points(POINTS["PUNISHMENT"], player2, DEFECT)
-                player2.update_points(POINTS["PUNISHMENT"], player1, DEFECT)
+                player1.update(POINTS["PUNISHMENT"], player2, DEFECT)
+                player2.update(POINTS["PUNISHMENT"], player1, DEFECT)
 
 
     def __remove_weak_players(self):
@@ -108,38 +115,61 @@ class Simulation:
 
 
     def single_generation(self):
+        """Run a single generation of the simulation."""
+        self.__reset_players()
         for player_id, player in self.players.items():
-
+            
+            # For each player, execute multiple interactions with
+            # other players.
             for interaction in range(self.interaction_count):
                 other = random.choice(list(self.players.values()))
                 while other == player:
                     other = random.choice(list(self.players.values()))
                 
                 self.__play_game(player, other)
-
+        
+        # Remove the weak and replicate the strong.
         self.__remove_weak_players()
         self.__replicate_strong_players()
 
+        # Add a new generation for each strategy in the frequencies dictionary.
         for category in self.strategy_frequencies.keys():
             self.strategy_frequencies[category].append(0)
 
+        # Count the frequencies of each strategy for this generation.
         for player in self.players.values():
             self.strategy_frequencies[player.strategy.NAME][-1] += 1
 
-        self.__reset_players()
 
-    def run(self):
+    def run(self, loud=True):
         """Run the simulation."""
+        if loud:
+            print("Welcome to the Iterated Prisoner's Dilemma.")
+            print("Create by Tiger Sachse.\n")
+            print("Running", end="", flush=True)
+
         for generation in range(self.generation_count):
+            if loud:
+                print(".", end="", flush=True)
             self.single_generation()
-        
+
+        if loud:
+            print("\nDone!\n")
+
+    
+    def print_results(self):
+        """Print the results of the simulation."""
+        print("Results:")
         for category in self.strategy_frequencies.keys():
-            print(category + ": ", end="")
-            print(self.strategy_frequencies[category])
+            print(category + ":")
+            for generation, count in enumerate(self.strategy_frequencies[category], 1):
+                line = "gen {0: >3}, count {1: <3} | {2}"
+                print(line.format(generation, count, "X" * count))
+            print()
 
 
 class Player:
-    """"""
+    """A player, who possesses a strategy for the game."""
     def __init__(self, identifier, strategy):
         """Initialize the player with a provided strategy and ID."""
         self.identifier = identifier
@@ -168,30 +198,35 @@ class Player:
 
 
     def play(self, opponent):
-        """Return the result of the player's strategy, when executed.'"""
+        """Return the result of the player's strategy, when executed."""
         return self.strategy.execute(opponent)
 
 
-    def update_points(self, points, opponent, opponent_action):
-        """Update the player's points and reflect on the results.'"""
+    def update(self, points, opponent, opponent_action):
+        """Update the player's points and reflect on the results."""
         self.points += points
         self.strategy.reflect(opponent, opponent_action)
 
 
     def reset(self):
-        """Reset this player.'"""
+        """Reset this player."""
         self.points = 0
         self.strategy.reset()
 
 
+# Beginning of the program.
 if __name__ == "__main__":
-    PLAYERS = 50
-    GENERATIONS = 30
-    INTERACTION_MULTIPLIER = 100
-    TURNOVER_MULTIPLIER = 10
 
+    # Change these constants to tinker with the simulation.
+    PLAYERS = 50
+    GENERATIONS = 50
+    TURNOVER_MULTIPLIER = 10
+    INTERACTION_MULTIPLIER = 100
+
+    # Create and run the simulation.
     simulation = Simulation(PLAYERS,
                             GENERATIONS,
                             PLAYERS * INTERACTION_MULTIPLIER,
                             PLAYERS // TURNOVER_MULTIPLIER)
     simulation.run()
+    simulation.print_results()
