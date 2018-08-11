@@ -218,15 +218,15 @@ class Player:
 if __name__ == "__main__":
 
     # Change these constants to tinker with the simulation.
-    PLAYERS = 50
-    GENERATIONS = 50
-    TURNOVER_MULTIPLIER = 10
+    PLAYERS = 100
+    GENERATIONS = 20
+    TURNOVER_DIVISOR = 20
     INTERACTION_MULTIPLIER = 100
 
     # Create and run the simulation.
     simulation = Simulation(PLAYERS,
                             GENERATIONS,
                             PLAYERS * INTERACTION_MULTIPLIER,
-                            PLAYERS // TURNOVER_MULTIPLIER)
+                            PLAYERS // TURNOVER_DIVISOR)
     simulation.run()
     simulation.print_results()
