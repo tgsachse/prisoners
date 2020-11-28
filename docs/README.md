@@ -2,7 +2,7 @@
 This project simulated the Iterated Prisoner's Dilemma from Richard Dawkins's book *The Selfish Gene*. It was produced in a day
 on a whim, and therefore is not particularly polished. It's still fun though!
 
-The simulator has several behavioral strategies, all located in the [strategies.py](https://github.com/tgsachse/prisoners/blob/master/source/strategies.py)
+The simulator has several behavioral strategies, all located in the [strategies.py](https://github.com/tgsachse/prisoners/blob/mainline/source/strategies.py)
 file. Included strategies are as follows:
 - Random
 - Always Cooperate
@@ -22,4 +22,4 @@ cd prisoners
 ./run.sh
 ```
 If you would like to adjust any of the simulation parameters, edit the constants located at the bottom of the
-[game.py](https://github.com/tgsachse/prisoners/blob/master/source/game.py#L220) file.
+[game.py](https://github.com/tgsachse/prisoners/blob/mainline/source/game.py#L220) file.
